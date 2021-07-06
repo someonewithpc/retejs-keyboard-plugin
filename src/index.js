@@ -6,12 +6,16 @@ function install(editor) {
         case 'Delete': // Delete a node
             editor.selected.each(n => editor.removeNode(n));
             break;
+
         case ' ': // Spawn a context menu at the mouse position, but make sure it's inside the editor
-            let rect = editor.view.container.getBoundingClientRect();
-            let event = new MouseEvent('contextmenu', {
-                clientX: rect.left + rect.width / 2,
-                clientY: rect.top + rect.height / 2
+            const mouse = editor.view.area.mouse;
+            const rect = editor.view.container.getBoundingClientRect();
+            const event = new MouseEvent('contextmenu', {
+                clientX: clamp(mouse.x, rect.left, rect.right),
+                clientY: clamp(mouse.y, rect.top, rect.bottom),
             });
+            editor.trigger('contextmenu', { e: event, view: editor.view });
+            break;
 
             editor.trigger('contextmenu', { e: event, view: editor.view }); 
             break;    
@@ -23,3 +27,4 @@ function install(editor) {
 export default {
     install
 }
+function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
